@@ -16,7 +16,7 @@ services:
     image: purpledb/purple-grpc:v0.1.6
     ports:
     - 8081:8081
-    command: ["--backend", "redis", "--redis-url", "redis:6379"]
+    command: ["--backend", "redis", "--redis-url", "redis://redis:6379"]
     depends_on:
     - redis
   redis:
