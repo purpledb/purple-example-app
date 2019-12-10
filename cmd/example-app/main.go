@@ -28,11 +28,6 @@ func getTodos(client *purple.GrpcClient) gin.HandlerFunc {
 			}
 		}
 
-		// TODO: fix this in the disk backend
-		if todos == nil {
-			todos = []string{}
-		}
-
 		c.JSON(http.StatusOK, gin.H{
 			"todos": todos,
 		})
