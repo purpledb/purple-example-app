@@ -13,7 +13,7 @@ services:
     environment:
       PURPLE_URL: purple:8081
   purple:
-    image: purpledb/purple-grpc:v0.1.5
+    image: purpledb/purple-grpc:v0.1.6
     ports:
     - 8081:8081
     command: ["--backend", "redis", "--redis-url", "redis:6379"]
