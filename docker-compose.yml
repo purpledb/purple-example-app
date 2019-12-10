@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  todos:
+    build:
+      context: .
+      cache_from:
+      - golang:1.12.7
+      - alpine:3.9.4
+    ports:
+    - 3000:3000
+    depends_on:
+    - purple
+    environment:
+      PURPLE_URL: purple:8081
+  purple:
+    image: purpledb/purple-grpc:v0.1.5
+    ports:
+    - 8081:8081
+    command: ["--backend", "redis", "--redis-url", "redis:6379"]
+    depends_on:
+    - redis
+  redis:
+    image: redis
+    ports:
+    - 6379:6379
