@@ -9,7 +9,10 @@ import (
 	"github.com/purpledb/purple-go-client"
 )
 
-const todosSet = "todos"
+const (
+	todosSet         = "todos"
+	todosCountCounter = "todos-count"
+)
 
 func getTodos(client *purple.GrpcClient) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -47,6 +50,12 @@ func createTodo(client *purple.GrpcClient) gin.HandlerFunc {
 			return
 		}
 
+		if err := client.CounterIncrement(todosCountCounter, 1); err != nil {
+			log.Println(err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"todos": todos,
 		})
@@ -64,8 +73,29 @@ func deleteTodo(client *purple.GrpcClient) gin.HandlerFunc {
 			return
 		}
 
+		if err := client.CounterIncrement(todosCountCounter, -1); err != nil {
+			log.Println(err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"todos": todos,
+		})
+	}
+}
+
+func getTodosCount(client *purple.GrpcClient) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		count, err := client.CounterGet(todosCountCounter)
+		if err != nil {
+			log.Println(err)
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"count": count,
 		})
 	}
 }
@@ -109,6 +139,7 @@ func main() {
 	todos := r.Group("/todos")
 	{
 		todos.GET("", getTodos(client))
+		todos.GET("/count", getTodosCount(client))
 
 		withTodo := todos.Group("")
 		{
