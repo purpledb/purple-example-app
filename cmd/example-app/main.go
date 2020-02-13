@@ -28,6 +28,10 @@ func getTodos(client *purple.GrpcClient) gin.HandlerFunc {
 			}
 		}
 
+		if todos == nil {
+			todos = []string{}
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"todos": todos,
 		})
@@ -45,7 +49,7 @@ func createTodo(client *purple.GrpcClient) gin.HandlerFunc {
 			return
 		}
 
-		if err := client.CounterIncrement(todosCountCounter, 1); err != nil {
+		if _, err := client.CounterIncrement(todosCountCounter, 1); err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)
 			return
@@ -68,7 +72,7 @@ func deleteTodo(client *purple.GrpcClient) gin.HandlerFunc {
 			return
 		}
 
-		if err := client.CounterIncrement(todosCountCounter, -1); err != nil {
+		if _, err := client.CounterIncrement(todosCountCounter, -1); err != nil {
 			log.Println(err)
 			c.Status(http.StatusInternalServerError)
 			return
